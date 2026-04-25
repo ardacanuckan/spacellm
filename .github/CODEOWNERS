@@ -1,0 +1,19 @@
+# Default — every change pings the maintainers.
+*                       @spacellm/maintainers
+
+# Strategy + research artifacts — change carefully.
+/plan/                  @spacellm/maintainers
+/research/              @spacellm/maintainers
+
+# Framework heart.
+/packages/spacellm/     @spacellm/maintainers
+
+# Public surface.
+/packages/web/          @spacellm/maintainers
+/packages/docs/         @spacellm/maintainers
+
+# Repo plumbing.
+/.github/               @spacellm/maintainers
+/Makefile               @spacellm/maintainers
+/pyproject.toml         @spacellm/maintainers
+/package.json           @spacellm/maintainers

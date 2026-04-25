@@ -1,0 +1,44 @@
+name: Feature request
+description: Propose a new capability or improvement.
+labels: [enhancement, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Please describe the user-visible *outcome* you want, then the
+        proposal. Designs are easier to evaluate than implementations.
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation — what problem are you solving?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal — what should the API / behaviour look like?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What did you reject, and why?
+
+  - type: dropdown
+    id: roadmap
+    attributes:
+      label: Which release is this for?
+      description: See plan/04-v1.0-roadmap.md for the release schedule.
+      options:
+        - "v0.1 (today — surface bug-grade urgency)"
+        - "v0.3 (physics-lite)"
+        - "v0.5 (web UI)"
+        - "v0.7 (training)"
+        - "v1.0+ (long-term)"
+        - "Unsure"
+    validations:
+      required: true

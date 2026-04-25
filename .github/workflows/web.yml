@@ -1,0 +1,58 @@
+name: web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/web/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "packages/web/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/web.yml"
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint (Biome)
+        run: pnpm --filter @spacellm/web exec biome check src
+
+      - name: Type check (tsc)
+        run: pnpm --filter @spacellm/web typecheck
+
+      - name: Build
+        run: pnpm --filter @spacellm/web build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-${{ github.sha }}
+          path: packages/web/.next/
+          retention-days: 7

@@ -1,0 +1,72 @@
+name: bench
+
+# Nightly empirical bench. Runs benchmarks/qwen_eval.py against
+# Qwen2.5-0.5B on a CPU runner and uploads the three headline PNGs
+# as a build artifact. The point of this workflow is reproducibility:
+# the README quotes numbers; this is the CI lane that proves the
+# numbers were produced by the current code on a clean machine, not
+# by a maintainer's laptop.
+#
+# Triggers:
+#   * nightly (UTC 04:00) so the latest main always has fresh artifacts
+#   * manual via workflow_dispatch
+#   * any PR that touches the bench script itself
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "benchmarks/**"
+      - "packages/spacellm/src/spacellm/**"
+      - ".github/workflows/bench.yml"
+
+concurrency:
+  group: bench-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qwen-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: Sync workspace (with hf extras)
+        run: uv sync --all-extras --all-packages
+
+      - name: Cache HuggingFace model snapshot
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-qwen2.5-0.5b-instruct-v1
+          restore-keys: |
+            hf-qwen2.5-0.5b-instruct-
+
+      - name: Run empirical bench
+        run: uv run python benchmarks/qwen_eval.py
+
+      - name: Verify outputs exist
+        run: |
+          for f in docs/assets/bit_position_attack_surface.png \
+                   docs/assets/qwen_protection_efficacy.png \
+                   docs/assets/orbit_seu_rates.png; do
+            test -f "$f" || { echo "missing: $f"; exit 1; }
+          done
+
+      - name: Upload bench artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen-eval-${{ github.sha }}
+          path: docs/assets/*.png
+          retention-days: 30

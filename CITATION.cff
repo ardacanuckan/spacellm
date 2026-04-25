@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+title: "SpaceLLM: a Python framework for radiation-tolerant transformer training and inference in space"
+message: "If you use SpaceLLM in research, please cite it using the metadata in this file."
+type: software
+authors:
+  - family-names: "Uckan"
+    given-names: "Arda Can"
+    email: "ardacan.uckan@healcapital.com"
+    affiliation: "Independent"
+repository-code: "https://github.com/ardacanuckan/spacellm"
+url: "https://github.com/ardacanuckan/spacellm"
+abstract: >-
+  SpaceLLM is a Python framework for protecting transformer model
+  parameters, optimizer state, and KV-caches against single-event
+  upsets in space-radiation environments. It composes a calibrated
+  Weibull/IRPP physics environment with HuggingFace-compatible
+  protection strategies (selective TMR, attention checksum,
+  KV-cache parity, layer-norm and embedding fingerprints) and a
+  bench harness that reports silent-error rate and overhead. The
+  shipped device profiles are validated against publicly fetched
+  primary-source beam-test data within an explicit ECSS-style
+  envelope.
+keywords:
+  - radiation tolerance
+  - transformers
+  - large language models
+  - on-orbit computing
+  - single-event upset
+  - SEU
+  - fault injection
+  - PyTorch
+  - HuggingFace
+license: Apache-2.0
+version: "0.3.0.dev0"
+date-released: "2026-04-25"
+contact:
+  - email: "ardacan.uckan@healcapital.com"
+    name: "Arda Can Uckan"
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Uckan"
+      given-names: "Arda Can"
+  title: "SpaceLLM: a Python framework for radiation-tolerant transformer training and inference in space"
+  year: 2026
+  url: "https://github.com/ardacanuckan/spacellm"
+  version: "0.3.0.dev0"

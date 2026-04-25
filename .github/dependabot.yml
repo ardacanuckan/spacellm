@@ -1,0 +1,42 @@
+version: 2
+updates:
+  # GitHub Actions versions in workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    labels: [ci, dependencies]
+
+  # Web (pnpm).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(web)"
+    labels: [web, dependencies]
+    versioning-strategy: increase
+    groups:
+      next:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+      tooling:
+        patterns:
+          - "@biomejs/biome"
+          - "typescript"
+          - "tailwindcss"
+          - "@tailwindcss/postcss"
+
+  # Python framework.
+  - package-ecosystem: pip
+    directory: /packages/spacellm
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(spacellm)"
+    labels: [spacellm, dependencies]

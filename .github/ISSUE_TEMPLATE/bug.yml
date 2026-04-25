@@ -1,0 +1,62 @@
+name: Bug report
+description: A defect in SpaceLLM behaviour.
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. A minimal, runnable reproducer is the single
+        most useful thing you can include.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      placeholder: Describe the unexpected behaviour and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Minimal reproducer
+      description: Code or commands that fail in a clean environment.
+      render: python
+
+  - type: input
+    id: version
+    attributes:
+      label: spacellm version
+      placeholder: 0.1.0.dev0
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: 3.13.x
+
+  - type: input
+    id: torch
+    attributes:
+      label: PyTorch version
+      placeholder: 2.4.0
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Linux
+        - macOS
+        - WSL2
+        - Windows (unsupported)
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Logs, stack traces, environment notes.

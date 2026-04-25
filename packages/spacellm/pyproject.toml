@@ -1,0 +1,71 @@
+[project]
+name = "spacellm"
+version = "0.1.0.dev0"
+description = "The open framework for radiation-tolerant transformer training and inference in space."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "SpaceLLM Contributors" }]
+keywords = [
+    "space",
+    "ai",
+    "llm",
+    "transformer",
+    "radiation",
+    "fault-tolerance",
+    "seu",
+    "rad-tolerant",
+    "machine-learning",
+    "pytorch",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "torch>=2.4",
+    "numpy>=1.26",
+    "rich>=13.9",
+    "typer>=0.15",
+]
+
+[project.optional-dependencies]
+hf = [
+    "transformers>=4.45",
+    "tokenizers>=0.20",
+    "safetensors>=0.4",
+    "accelerate>=1.1",
+]
+profile = ["matplotlib>=3.9", "plotly>=5.24", "pandas>=2.2"]
+all = ["spacellm[hf,profile]"]
+
+[project.scripts]
+spacellm = "spacellm.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/spacellm/spacellm"
+Documentation = "https://docs.spacellm.org"
+Source = "https://github.com/spacellm/spacellm"
+Issues = "https://github.com/spacellm/spacellm/issues"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/spacellm"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/spacellm", "tests", "README.md", "LICENSE"]

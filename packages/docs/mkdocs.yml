@@ -1,0 +1,93 @@
+site_name: SpaceLLM
+site_description: The open framework for radiation-tolerant transformer training and inference in space.
+site_url: https://docs.spacellm.org
+repo_url: https://github.com/spacellm/spacellm
+repo_name: spacellm/spacellm
+edit_uri: edit/main/packages/docs/docs/
+copyright: "© 2026 SpaceLLM Contributors · Apache-2.0"
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Orbital LLM training: orbital-training.md
+  - Architecture: architecture.md
+  - Modules:
+      - Protection: protection.md
+      - Environments: environments.md
+      - Profiling: profiling.md
+      - Observability: observability.md
+  - Physics:
+      - Primer: physics-primer.md
+      - Beam-test data: beam-test-data.md
+  - CLI: cli.md
+  - API reference: api.md
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.smartsymbols
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+
+plugins:
+  - search:
+      lang: en
+  - section-index
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/spacellm/spacellm
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/spacellm

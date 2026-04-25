@@ -1,0 +1,5 @@
+packages:
+  - 'packages/web'
+
+# Note: packages/spacellm is a Python package managed via uv (see pyproject.toml).
+# packages/docs is a MkDocs site managed via uv as well.
