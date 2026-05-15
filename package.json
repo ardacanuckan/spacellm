@@ -26,6 +26,6 @@
     "docs:build": "uv run --package spacellm-docs mkdocs build -f packages/docs/mkdocs.yml"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4"
+    "@biomejs/biome": "^2.4.15"
   }
 }
