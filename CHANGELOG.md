@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-22
+
+### Added
+- `ABFTProtection` strategy and `spacellm.nn.ABFTLinear`: algorithm-based fault tolerance for the matrix multiply itself. Row/column weight checksums detect and correct a single corrupted weight element; an output checksum detects transient compute faults and replays. Two checksum vectors per layer instead of a 3× replica.
+- Weight calibration path: `spacellm.environments.physics.fit_weibull` (dependency-free four-parameter Weibull fit) and `device_from_measurements` to build a `DeviceModel` from your own beam-test points.
+- `spacellm.environments.cots`: process-node analogue `DeviceModel` estimates for COTS accelerators (Jetson Orin, Coral Edge TPU, 5 nm-class datacentre GPU), all `verified=False`.
+- `spacellm.mission`: `estimate_mission_cost` turns an SEU rate into expected wasted energy per day, rollback count, and the Young-optimal checkpoint interval.
+- `spacellm.availability`: `simulate_availability` discrete-event model of eclipse duty-cycle plus single-event latch-up, reporting availability, MTBF, and MTTR.
+- `spacellm.reliability`: `compose_residual_rate` composes SECDED ECC, memory scrubbing, and compute ABFT into a residual silent-error rate with a per-layer improvement breakdown.
+- `GradientGuard` protection strategy: detects (and optionally sanitises) silent corruption in gradients and optimizer state during training.
+- `ExponentRangeGuard` protection strategy: clamps weights to their trusted value range, neutralising exponent-flip blow-ups for two scalars per tensor.
+- `spacellm.validation.reconcile_seu_rate` / `reconcile_events`: post-flight reconciliation of predicted vs observed on-orbit upsets via a two-sided Poisson test.
+- `spacellm.bench.compare_number_formats`: bit-flip sensitivity sweep across FP32/FP16/BF16/INT8.
+
+### Changed
+- Test suite expanded to 316 cases; mypy `--strict` and ruff remain clean across the source tree.
+
 ## [0.3.0-dev] - 2026-04
 
 ### Added
@@ -30,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - MkDocs Material documentation site `packages/docs`.
 - GitHub Actions CI for Python and web.
 
-[Unreleased]: https://github.com/ardacanuckan/spacellm/compare/HEAD...HEAD
+[Unreleased]: https://github.com/ardacanuckan/spacellm/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/ardacanuckan/spacellm/releases/tag/v0.4.0
 [0.3.0-dev]: https://github.com/ardacanuckan/spacellm/releases/tag/v0.3.0-dev
 [0.1.0-dev]: https://github.com/ardacanuckan/spacellm/releases/tag/v0.1.0-dev

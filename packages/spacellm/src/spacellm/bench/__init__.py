@@ -16,5 +16,17 @@ from __future__ import annotations
 
 from spacellm.bench.harness import BenchResult, bench_protection
 from spacellm.bench.metrics import silent_error_rate
+from spacellm.bench.quantization import (
+    NumberFormatSensitivity,
+    compare_number_formats,
+    format_sensitivity,
+)
 
-__all__ = ["BenchResult", "bench_protection", "silent_error_rate"]
+__all__ = [
+    "BenchResult",
+    "NumberFormatSensitivity",
+    "bench_protection",
+    "compare_number_formats",
+    "format_sensitivity",
+    "silent_error_rate",
+]

@@ -16,8 +16,30 @@ Public API surface (stable through 0.x patch releases):
 
 from __future__ import annotations
 
-from spacellm import bench, environments, nn, observability, profiling, protection, runtime
+from spacellm import (
+    availability,
+    bench,
+    environments,
+    mission,
+    nn,
+    observability,
+    profiling,
+    protection,
+    reliability,
+    runtime,
+)
 from spacellm._version import __version__
+from spacellm.availability import (
+    AvailabilityProfile,
+    AvailabilityReport,
+    simulate_availability,
+)
+from spacellm.mission import MissionCostReport, MissionProfile, estimate_mission_cost
+from spacellm.reliability import (
+    ReliabilityStack,
+    ResidualRateReport,
+    compose_residual_rate,
+)
 from spacellm.runtime.harden import HardenedModel, harden
 from spacellm.types import (
     DeviceModel,
@@ -28,19 +50,31 @@ from spacellm.types import (
 )
 
 __all__ = [
+    "AvailabilityProfile",
+    "AvailabilityReport",
     "DeviceModel",
     "FaultCause",
     "FaultEvent",
     "HardenedModel",
+    "MissionCostReport",
+    "MissionProfile",
     "RadiationStep",
+    "ReliabilityStack",
+    "ResidualRateReport",
     "RunRecord",
     "__version__",
+    "availability",
     "bench",
+    "compose_residual_rate",
     "environments",
+    "estimate_mission_cost",
     "harden",
+    "mission",
     "nn",
     "observability",
     "profiling",
     "protection",
+    "reliability",
     "runtime",
+    "simulate_availability",
 ]

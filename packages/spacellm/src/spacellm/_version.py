@@ -5,4 +5,4 @@ The string here is duplicated in ``pyproject.toml``; CI verifies they match.
 
 from __future__ import annotations
 
-__version__ = "0.1.0.dev0"
+__version__ = "0.4.0"

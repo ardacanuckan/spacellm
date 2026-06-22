@@ -41,15 +41,15 @@ class ProtectionReport:
 class Strategy(ABC):
     """Base class for all protection strategies.
 
-    A strategy is described declaratively, then materialised by
-    :meth:`apply` mutating the model in place (or returning a wrapped one).
-    After application, the model behaves as a normal :class:`torch.nn.Module`
-   , protected layers are wrapped or hooked, transparent to downstream
-    code. :meth:`collect_report` returns telemetry, and :meth:`reset` clears
-    accumulated counters without unwinding the structural changes.
+     A strategy is described declaratively, then materialised by
+     :meth:`apply` mutating the model in place (or returning a wrapped one).
+     After application, the model behaves as a normal :class:`torch.nn.Module`
+    , protected layers are wrapped or hooked, transparent to downstream
+     code. :meth:`collect_report` returns telemetry, and :meth:`reset` clears
+     accumulated counters without unwinding the structural changes.
 
-    Strategies should be cheap to construct and have no side-effects until
-    :meth:`apply` runs.
+     Strategies should be cheap to construct and have no side-effects until
+     :meth:`apply` runs.
     """
 
     name: str = "strategy"

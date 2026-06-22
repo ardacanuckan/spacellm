@@ -8,7 +8,8 @@ power users can hand-pick replacements without going through a strategy.
 
 from __future__ import annotations
 
+from spacellm.nn.abft import ABFTLinear
 from spacellm.nn.layer_norm import TMRLayerNorm
 from spacellm.nn.tmr import TMRLinear
 
-__all__ = ["TMRLayerNorm", "TMRLinear"]
+__all__ = ["ABFTLinear", "TMRLayerNorm", "TMRLinear"]

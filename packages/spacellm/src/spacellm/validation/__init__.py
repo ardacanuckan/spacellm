@@ -20,10 +20,18 @@ from __future__ import annotations
 from spacellm.validation import datasets
 from spacellm.validation.data import WeibullValidationData
 from spacellm.validation.harness import ValidationResult, validate_against_measurements
+from spacellm.validation.reconcile import (
+    ReconciliationResult,
+    reconcile_events,
+    reconcile_seu_rate,
+)
 
 __all__ = [
+    "ReconciliationResult",
     "ValidationResult",
     "WeibullValidationData",
     "datasets",
+    "reconcile_events",
+    "reconcile_seu_rate",
     "validate_against_measurements",
 ]

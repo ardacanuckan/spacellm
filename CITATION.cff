@@ -31,8 +31,8 @@ keywords:
   - PyTorch
   - HuggingFace
 license: Apache-2.0
-version: "0.3.0.dev0"
-date-released: "2026-04-25"
+version: "0.4.0"
+date-released: "2026-06-22"
 contact:
   - email: "ardacan.uckan@healcapital.com"
     name: "Arda Can Uckan"
@@ -44,4 +44,4 @@ preferred-citation:
   title: "SpaceLLM: a Python framework for radiation-tolerant transformer training and inference in space"
   year: 2026
   url: "https://github.com/ardacanuckan/spacellm"
-  version: "0.3.0.dev0"
+  version: "0.4.0"

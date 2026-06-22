@@ -17,7 +17,7 @@ them interchangeably.
 
 from __future__ import annotations
 
-from spacellm.environments import devices, orbits, physics
+from spacellm.environments import cots, devices, orbits, physics
 from spacellm.environments.base import Environment
 from spacellm.environments.mcu import MCUDistribution, MCUEnvironment
 from spacellm.environments.orbits import (
@@ -39,6 +39,7 @@ __all__ = [
     "OrbitProfile",
     "PhysicsLiteEnvironment",
     "StatisticalEnvironment",
+    "cots",
     "devices",
     "orbits",
     "physics",

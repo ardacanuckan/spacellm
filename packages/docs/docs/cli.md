@@ -17,7 +17,7 @@ spacellm --help
 
 ```bash
 $ spacellm version
-0.1.0.dev0
+0.4.0
 ```
 
 ### `runs`

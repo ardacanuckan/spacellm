@@ -4,7 +4,7 @@
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![python: 3.11+](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
-[![tests: 217 passing](https://img.shields.io/badge/tests-217%20passing-brightgreen)](#engineering-status)
+[![tests: 316 passing](https://img.shields.io/badge/tests-316%20passing-brightgreen)](#engineering-status)
 [![mypy: strict](https://img.shields.io/badge/mypy-strict-blueviolet)](pyproject.toml)
 [![ruff: clean](https://img.shields.io/badge/ruff-clean-green)](pyproject.toml)
 
@@ -87,7 +87,7 @@ playground site, and an MkDocs API reference, organised as a monorepo:
 git clone https://github.com/ardacanuckan/spacellm.git
 cd spacellm
 make install                                 # uv sync (Python) + pnpm install (web)
-make test                                    # 217 pytest cases + biome + tsc
+make test                                    # 316 pytest cases + biome + tsc
 ```
 
 ## Quickstart
@@ -508,12 +508,16 @@ project is the half that runs on your laptop.
 | `spacellm.environments.physics_lite` | `PhysicsLiteEnvironment(device, orbit)` |
 | `spacellm.environments.mcu` | `MCUDistribution` + `MCUEnvironment` wrapper |
 | `spacellm.environments.statistical` | `StatisticalEnvironment` for tests + tutorials |
-| `spacellm.protection` | `SelectiveTMR` / `AttentionChecksum` / `LayerNormTMR` / `EmbeddingChecksum` / `KVCacheParity` |
+| `spacellm.protection` | `SelectiveTMR` / `ABFTProtection` / `AttentionChecksum` / `LayerNormTMR` / `EmbeddingChecksum` / `KVCacheParity` / `ExponentRangeGuard` / `GradientGuard` |
+| `spacellm.nn` | `TMRLinear` / `ABFTLinear` / `TMRLayerNorm` drop-in modules |
+| `spacellm.mission` | `estimate_mission_cost`, SEU rate → kWh / rollbacks / optimal checkpoint interval |
+| `spacellm.availability` | `simulate_availability`, eclipse + SEL → availability / MTBF / MTTR |
+| `spacellm.reliability` | `compose_residual_rate`, ECC + scrubbing + ABFT → residual silent-error rate |
 | `spacellm.runtime` | `harden(model, strategies=...)` + `HardenedModel` handle |
 | `spacellm.profiling` | Static + sensitivity-driven layer reports, HTML / JSON output |
 | `spacellm.observability` | SQLite run DB, `Run` context manager, self-contained HTML reports |
-| `spacellm.bench` | `silent_error_rate`, `bench_protection`, `BenchResult` |
-| `spacellm.validation` | `validate_against_measurements`, public `datasets` module |
+| `spacellm.bench` | `silent_error_rate`, `bench_protection`, `BenchResult`, `compare_number_formats` |
+| `spacellm.validation` | `validate_against_measurements`, `reconcile_seu_rate`, public `datasets` module |
 | `spacellm.cli` | `spacellm version | runs | show | profile` |
 
 Long-form reference docs live under [`packages/docs/docs/`](packages/docs/docs)
@@ -608,7 +612,7 @@ more, plus correlated multi-cell upsets, see the MCU module.
 
 ```
 $ uv run pytest packages/spacellm
-========================== 217 passed ==========================
+========================== 316 passed ==========================
 
 $ uv run ruff check packages/spacellm
 All checks passed!
@@ -620,7 +624,7 @@ Success: no issues found in 43 source files
 | Metric | Value |
 |---|---|
 | Atomic git commits | 25+ (Conventional Commits) |
-| Tests passing | 217 / 217 |
+| Tests passing | 316 / 316 |
 | Lint | clean (`ruff check` + `ruff format --check`) |
 | Type checking | clean (`mypy --strict`, 43 source files) |
 | Python versions tested | 3.11 · 3.12 · 3.13 |
@@ -639,7 +643,7 @@ spacellm/
 │   ├── spacellm/            Python framework (PyTorch-style namespace)
 │   │   ├── src/spacellm/    types · environments · protection · runtime · profiling
 │   │   │                    observability · bench · validation · cli · nn
-│   │   └── tests/           217 pytest cases
+│   │   └── tests/           316 pytest cases
 │   ├── web/                 Next.js 15 marketing + interactive playground
 │   └── docs/                MkDocs Material reference + physics primer
 ├── examples/
@@ -669,7 +673,7 @@ BibTeX automatically. If you prefer plain BibTeX:
              transformer training and inference in space},
   year    = {2026},
   url     = {https://github.com/ardacanuckan/spacellm},
-  version = {0.3.0.dev0}
+  version = {0.4.0}
 }
 ```
 

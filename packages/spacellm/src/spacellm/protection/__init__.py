@@ -25,16 +25,22 @@ KV cache during long-context decode (parity).
 
 from __future__ import annotations
 
+from spacellm.protection.abft import ABFTProtection
 from spacellm.protection.attention import AttentionChecksum
 from spacellm.protection.base import ProtectionReport, Strategy
 from spacellm.protection.embedding import EmbeddingChecksum
+from spacellm.protection.exponent import ExponentRangeGuard
+from spacellm.protection.gradient import GradientGuard
 from spacellm.protection.kv_cache import KVCacheParity
 from spacellm.protection.layer_norm import LayerNormTMR
 from spacellm.protection.tmr import SelectiveTMR
 
 __all__ = [
+    "ABFTProtection",
     "AttentionChecksum",
     "EmbeddingChecksum",
+    "ExponentRangeGuard",
+    "GradientGuard",
     "KVCacheParity",
     "LayerNormTMR",
     "ProtectionReport",

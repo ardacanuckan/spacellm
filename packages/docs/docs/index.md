@@ -48,4 +48,4 @@ In space, those flips arrive whether you defend against them or not. Protons, he
 
 ## Status
 
-`0.3.0.dev0`. Pre-1.0; API may still change. 217 / 217 tests passing, ruff clean, mypy `--strict` clean across the source tree.
+`0.4.0`. Pre-1.0; API may still change. 316 / 316 tests passing, ruff clean, mypy `--strict` clean across the source tree.

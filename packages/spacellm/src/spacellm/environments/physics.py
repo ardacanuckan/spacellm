@@ -28,6 +28,7 @@ sources for real device characterisation.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import overload
 
 import numpy as np
@@ -160,6 +161,207 @@ def irpp_seu_rate_per_cell(
     return float(np.trapezoid(integrand, grid))
 
 
+@dataclass(frozen=True, slots=True)
+class WeibullFit:
+    """Result of fitting a four-parameter Weibull to beam-test points.
+
+    Attributes:
+        saturation_cross_section_cm2: Fitted σ_sat.
+        onset_let_mev_cm2_per_mg: Fitted onset LET L₀.
+        width: Fitted width W.
+        shape: Fitted shape s.
+        rmse_log10: Root-mean-square residual in ``log10(σ)`` space across
+            the supplied points.
+        r_squared: Coefficient of determination on ``log10(σ)``.
+        n_points: Number of measurement points the fit used.
+    """
+
+    saturation_cross_section_cm2: float
+    onset_let_mev_cm2_per_mg: float
+    width: float
+    shape: float
+    rmse_log10: float
+    r_squared: float
+    n_points: int
+
+
+def fit_weibull(
+    let_points_mev_cm2_per_mg: NDArray[np.floating],
+    measured_cross_section_cm2: NDArray[np.floating],
+    *,
+    n_onset_grid: int = 24,
+) -> WeibullFit:
+    """Fit the four-parameter Weibull cross-section to beam-test points.
+
+    This is the *bring-your-own-device* path: an operator who has run their
+    own COTS accelerator through a heavy-ion beam can turn the raw
+    ``(LET, σ)`` table into a calibrated :class:`~spacellm.types.DeviceModel`
+    (via :func:`device_from_measurements`) and then use the full physics
+    pipeline on their exact silicon, rather than the shipped RT PolarFire
+    analogues.
+
+    The fit is dependency-free (no SciPy). For each candidate
+    ``(σ_sat, L₀)`` on a small grid, the remaining two parameters are
+    recovered in closed form by a log-linear regression of
+    ``ln(-ln(1 - σ/σ_sat))`` against ``ln(L - L₀)`` (which is exactly
+    linear in ``ln(W)`` and ``s``); the grid point with the lowest
+    ``log10(σ)`` RMSE wins. Deterministic and reproducible.
+
+    Args:
+        let_points_mev_cm2_per_mg: 1-D strictly-increasing LET grid.
+        measured_cross_section_cm2: 1-D measured σ at each LET point.
+        n_onset_grid: Number of onset-LET candidates to scan below the
+            lowest measured LET.
+
+    Returns:
+        A :class:`WeibullFit`.
+
+    Raises:
+        ValueError: If inputs mismatch in shape, are too short, contain a
+            non-positive σ, or no admissible fit can be found.
+    """
+    let = np.asarray(let_points_mev_cm2_per_mg, dtype=np.float64)
+    sigma = np.asarray(measured_cross_section_cm2, dtype=np.float64)
+    if let.shape != sigma.shape:
+        raise ValueError(f"LET and σ must match in shape; got {let.shape} vs {sigma.shape}")
+    if let.ndim != 1:
+        raise ValueError("LET must be 1-D")
+    if let.size < 3:
+        raise ValueError("need at least 3 points to fit a 4-parameter Weibull")
+    if not np.all(np.diff(let) > 0):
+        raise ValueError("LET points must be strictly increasing")
+    if np.any(sigma <= 0):
+        raise ValueError("measured cross-sections must be strictly positive to fit")
+
+    sigma_max = float(sigma.max())
+    sat_candidates = [sigma_max * f for f in (1.02, 1.1, 1.25, 1.5, 2.0)]
+    onset_hi = float(let.min()) * 0.99
+    onset_candidates = np.linspace(0.0, max(onset_hi, 0.0), n_onset_grid)
+
+    best: tuple[float, float, float, float, float] | None = None  # (rmse, sat, l0, w, s)
+    log_meas = np.log10(sigma)
+    for sat in sat_candidates:
+        ratio = sigma / sat
+        # y = -ln(1 - σ/σ_sat); requires σ < σ_sat for a finite value.
+        usable = ratio < 0.999
+        for l0 in onset_candidates:
+            excess = let - l0
+            mask = usable & (excess > 0.0)
+            if int(mask.sum()) < 2:
+                continue
+            y = -np.log(1.0 - ratio[mask])
+            x_lin = np.log(excess[mask])
+            y_lin = np.log(y)
+            slope, intercept = np.polyfit(x_lin, y_lin, 1)
+            shape = float(slope)
+            if shape <= 0.0:
+                continue
+            width = float(np.exp(-intercept / shape))
+            if not np.isfinite(width) or width <= 0.0:
+                continue
+            predicted = weibull_cross_section(
+                let,
+                saturation_cross_section_cm2=sat,
+                onset_let_mev_cm2_per_mg=float(l0),
+                width=width,
+                shape=shape,
+            )
+            log_pred = np.log10(np.maximum(np.asarray(predicted), 1e-30))
+            rmse = float(np.sqrt(np.mean((log_pred - log_meas) ** 2)))
+            if best is None or rmse < best[0]:
+                best = (rmse, sat, float(l0), width, shape)
+
+    if best is None:
+        raise ValueError("could not fit a Weibull to the supplied points")
+
+    rmse, sat, l0, width, shape = best
+    ss_res = float(
+        np.sum(
+            (
+                log_meas
+                - np.log10(
+                    np.maximum(
+                        np.asarray(
+                            weibull_cross_section(
+                                let,
+                                saturation_cross_section_cm2=sat,
+                                onset_let_mev_cm2_per_mg=l0,
+                                width=width,
+                                shape=shape,
+                            ),
+                        ),
+                        1e-30,
+                    ),
+                )
+            )
+            ** 2
+        )
+    )
+    ss_tot = float(np.sum((log_meas - log_meas.mean()) ** 2))
+    r_squared = 1.0 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+
+    return WeibullFit(
+        saturation_cross_section_cm2=sat,
+        onset_let_mev_cm2_per_mg=l0,
+        width=width,
+        shape=shape,
+        rmse_log10=rmse,
+        r_squared=r_squared,
+        n_points=int(let.size),
+    )
+
+
+def device_from_measurements(
+    name: str,
+    let_points_mev_cm2_per_mg: NDArray[np.floating],
+    measured_cross_section_cm2: NDArray[np.floating],
+    *,
+    process_node_nm: float,
+    citation: str,
+    sensitive_volume_um3: float = 0.05,
+    sel_threshold_mev_cm2_per_mg: float | None = None,
+    tid_failure_krad_si: float | None = None,
+    verified: bool = True,
+) -> DeviceModel:
+    """Calibrate a :class:`~spacellm.types.DeviceModel` from beam-test points.
+
+    Convenience wrapper over :func:`fit_weibull`: fits the cross-section
+    curve and packs it into a ``DeviceModel`` ready for the environment
+    pipeline. ``verified`` defaults to ``True`` because the caller is
+    supplying real, cited beam-test data, set it to ``False`` if the
+    points are themselves estimates.
+
+    Args:
+        name: Stable device identifier.
+        let_points_mev_cm2_per_mg: Beam-test LET grid.
+        measured_cross_section_cm2: Beam-test σ at each LET.
+        process_node_nm: Lithography node, used for the default MCU
+            distribution.
+        citation: Primary-source citation for the supplied data.
+        sensitive_volume_um3: SRAM sensitive-volume estimate.
+        sel_threshold_mev_cm2_per_mg: SEL onset LET, if characterised.
+        tid_failure_krad_si: TID failure threshold, if characterised.
+        verified: Provenance flag stored on the model.
+
+    Returns:
+        A calibrated :class:`~spacellm.types.DeviceModel`.
+    """
+    fit = fit_weibull(let_points_mev_cm2_per_mg, measured_cross_section_cm2)
+    return DeviceModel(
+        name=name,
+        process_node_nm=process_node_nm,
+        sensitive_volume_um3=sensitive_volume_um3,
+        saturation_cross_section_cm2=fit.saturation_cross_section_cm2,
+        onset_let_mev_cm2_per_mg=fit.onset_let_mev_cm2_per_mg,
+        width=fit.width,
+        shape=fit.shape,
+        verified=verified,
+        sel_threshold_mev_cm2_per_mg=sel_threshold_mev_cm2_per_mg,
+        tid_failure_krad_si=tid_failure_krad_si,
+        citations=(citation,),
+    )
+
+
 def petersen_fom(device: DeviceModel) -> float:
     """Petersen Figure of Merit (cm² · (MeV·cm²·mg⁻¹)⁻²).
 
@@ -180,7 +382,10 @@ def petersen_fom(device: DeviceModel) -> float:
 
 
 __all__ = [
+    "WeibullFit",
     "cross_section_for",
+    "device_from_measurements",
+    "fit_weibull",
     "irpp_seu_rate_per_cell",
     "petersen_fom",
     "weibull_cross_section",
